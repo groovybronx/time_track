@@ -1,0 +1,44 @@
+name: time_track
+description: "Application de suivi du temps multi-plateforme."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # UI & Style
+  cupertino_icons: ^1.0.8
+  google_fonts: ^8.0.2
+  intl: ^0.20.2
+
+  # State Management
+  flutter_riverpod: ^2.6.1
+
+  # Data — SQLite (Drift)
+  drift: ^2.23.1
+  drift_flutter: ^0.2.4
+  path_provider: ^2.1.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+  # Générateurs Drift
+  drift_dev: ^2.23.1
+  build_runner: ^2.4.13
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+  uses-material-design: true
+  generate: true
