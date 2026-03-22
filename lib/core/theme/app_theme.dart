@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   AppTheme._();
@@ -27,7 +26,7 @@ class AppTheme {
         secondary: primary,
         surface: bgLight,
       ),
-      textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme),
+      textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Inter'),
       cardTheme: CardThemeData(
         color: glassBgLight,
         elevation: 0,
@@ -49,7 +48,7 @@ class AppTheme {
         secondary: accent,
         surface: bgDark,
       ),
-      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
+      textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'Inter'),
       cardTheme: CardThemeData(
         color: Color(0x66000000), // glassBgDark — noir 40%
         elevation: 0,
@@ -61,20 +60,13 @@ class AppTheme {
     );
   }
 
-  // ─── Utilitaire : Glass Card ──────────────────────────────────────────────────
-  static Widget glassCard({required Widget child, Color? bgColor}) {
+// Utilitaire pour appliquer l'effet Glass à n'importe quel Widget
+  static Widget glassCard({required Widget child}) {
     return Container(
       decoration: BoxDecoration(
-        color: bgColor ?? glassBgLight,
+        color: glassBgLight, // Ajuster selon le thème
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: glassBorder),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),

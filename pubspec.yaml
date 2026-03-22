@@ -17,6 +17,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   google_fonts: ^8.0.2
   intl: ^0.20.2
+  flutter_blurhash: ^0.9.1
 
   # State Management
   flutter_riverpod: ^2.6.1
@@ -42,3 +43,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Variable.ttf
+        - asset: assets/fonts/Inter-Italic-Variable.ttf
