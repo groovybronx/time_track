@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/local/database.dart';
-import '../../../main.dart'; // IMPORTANT : On importe le provider global depuis main.dart
+import '../../../main.dart';
 
 /// 1. SUPPRESSION de appDatabaseProvider ici.
 /// On utilise uniquement databaseProvider défini dans main.dart.
@@ -43,5 +43,15 @@ class TrackerController {
       // ARRÊT
       await _database.stopEntry(id: activeEntry.id);
     }
+  }
+
+  /// Met à jour une prestation existante.
+  Future<void> updateEntry(TimeEntry entry) async {
+    await _database.updateTimeEntry(entry);
+  }
+
+  /// Supprime une prestation.
+  Future<void> removeEntry(int id) async {
+    await _database.deleteTimeEntry(id);
   }
 }

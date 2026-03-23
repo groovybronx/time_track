@@ -25,7 +25,7 @@ class AgendaEventTile extends ConsumerWidget {
       onTap: onTap,
       child: AppTheme.glassCard(
         // CORRECTION : Utilisation de ?. et ?? pour la sécurité nulle
-        bgColor: _getColorFromToken(client?.colorToken ?? 'slate-500').withOpacity(0.15),
+        bgColor: _getColorFromToken(client?.colorToken ?? 'slate-500').withValues(alpha: 0.15),
         child: Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
@@ -49,7 +49,7 @@ class AgendaEventTile extends ConsumerWidget {
               Text(
                 // CORRECTION : Affichage d'un texte par défaut si pas de client
                 client?.societe ?? 'Sans client',
-                style: TextStyle(fontSize: 9, color: AppTheme.primary.withOpacity(0.7)),
+                style: TextStyle(fontSize: 9, color: AppTheme.primary.withValues(alpha: 0.7)),
                 overflow: TextOverflow.ellipsis,
               ),
               const Spacer(),

@@ -27,9 +27,9 @@ class ClientsScreen extends ConsumerWidget {
                 Text(
                   'Clients',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: AppTheme.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    color: AppTheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 ElevatedButton.icon(
                   onPressed: () => _openClientModal(context),
@@ -38,7 +38,10 @@ class ClientsScreen extends ConsumerWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.accent,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
                   ),
                 ),
               ],
@@ -67,11 +70,18 @@ class ClientsScreen extends ConsumerWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.people_outline, size: 80, color: AppTheme.primary.withOpacity(0.2)),
+          Icon(
+            Icons.people_outline,
+            size: 80,
+            color: AppTheme.primary.withValues(alpha: 0.2),
+          ),
           const SizedBox(height: 16),
           Text(
             "Aucun client pour le moment",
-            style: TextStyle(color: AppTheme.primary.withOpacity(0.5), fontSize: 18),
+            style: TextStyle(
+              color: AppTheme.primary.withValues(alpha: 0.5),
+              fontSize: 18,
+            ),
           ),
           const SizedBox(height: 24),
           OutlinedButton(
@@ -84,7 +94,11 @@ class ClientsScreen extends ConsumerWidget {
   }
 
   // Grille Responsive
-  Widget _buildClientGrid(BuildContext context, List<Client> clients, WidgetRef ref) {
+  Widget _buildClientGrid(
+    BuildContext context,
+    List<Client> clients,
+    WidgetRef ref,
+  ) {
     final isDesktop = MediaQuery.of(context).size.width > 900;
 
     return GridView.builder(
@@ -137,17 +151,28 @@ class _ClientCard extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     client.societe,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 // Actions CRUD
                 IconButton(
-                  icon: const Icon(Icons.edit_outlined, size: 20),
+                  icon: const Icon(
+                    Icons.edit_outlined,
+                    size: 20,
+                    color: Colors.blueAccent,
+                  ),
                   onPressed: () => _editClient(context),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline, size: 20, color: Colors.redAccent),
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    size: 20,
+                    color: Colors.redAccent,
+                  ),
                   onPressed: () => _confirmDelete(context, ref),
                 ),
               ],
@@ -156,12 +181,17 @@ class _ClientCard extends ConsumerWidget {
             if (client.nomContact != null && client.nomContact!.isNotEmpty)
               Text(
                 client.nomContact!,
-                style: TextStyle(color: AppTheme.primary.withOpacity(0.6)),
+                style: TextStyle(
+                  color: AppTheme.primary.withValues(alpha: 0.6),
+                ),
               ),
             const SizedBox(height: 8),
             Text(
               "Tarif : ${FormatterService.formatCurrency(client.tarifHt)}/h",
-              style: const TextStyle(fontWeight: FontWeight.w600, color: AppTheme.accent),
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: AppTheme.accent,
+              ),
             ),
           ],
         ),
@@ -185,9 +215,14 @@ class _ClientCard extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Supprimer le client ?"),
-        content: Text("Cela supprimera également toutes les prestations liées à ${client.societe}."),
+        content: Text(
+          "Cela supprimera également toutes les prestations liées à ${client.societe}.",
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("ANNULER")),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("ANNULER"),
+          ),
           TextButton(
             onPressed: () {
               ref.read(clientsControllerProvider).removeClient(client.id);
@@ -201,21 +236,21 @@ class _ClientCard extends ConsumerWidget {
   }
 
   Color _getColorFromToken(String token) {
-  switch (token) {
-    case 'blue-500':
-      return Colors.blue;
-    case 'emerald-500':
-      return const Color(0xFF10B981); // Remplace Colors.emerald
-    case 'amber-500':
-      return Colors.amber;
-    case 'rose-500':
-      return const Color(0xFFF43F5E); // Remplace Colors.rose
-    case 'purple-500':
-      return Colors.purple;
-    case 'slate-500':
-      return const Color(0xFF64748B); // Remplace Colors.slate
-    default:
-      return Colors.blue;
+    switch (token) {
+      case 'blue-500':
+        return Colors.blue;
+      case 'emerald-500':
+        return const Color(0xFF10B981); // Remplace Colors.emerald
+      case 'amber-500':
+        return Colors.amber;
+      case 'rose-500':
+        return const Color(0xFFF43F5E); // Remplace Colors.rose
+      case 'purple-500':
+        return Colors.purple;
+      case 'slate-500':
+        return const Color(0xFF64748B); // Remplace Colors.slate
+      default:
+        return Colors.blue;
+    }
   }
-}
 }

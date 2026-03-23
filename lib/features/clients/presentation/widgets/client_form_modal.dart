@@ -27,7 +27,7 @@ class _ClientFormModalState extends ConsumerState<ClientFormModal> {
 
   // Couleurs disponibles (en phase avec les tokens Tailwind/AppTheme)
 
-  
+
   final List<String> _availableColors = [
     'blue-500',
     'emerald-500',
@@ -128,12 +128,12 @@ class _ClientFormModalState extends ConsumerState<ClientFormModal> {
                           color: _getColorFromToken(colorToken),
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: isSelected ? AppTheme.primary : Colors.white.withOpacity(0.5),
+                            color: isSelected ? AppTheme.primary : Colors.white.withValues(alpha: 0.5),
                             width: isSelected ? 3 : 1,
                           ),
                           boxShadow: isSelected ? [
                             BoxShadow(
-                              color: _getColorFromToken(colorToken).withOpacity(0.4),
+                              color: _getColorFromToken(colorToken).withValues(alpha: 0.4),
                               blurRadius: 8,
                               spreadRadius: 2,
                             )
@@ -155,7 +155,7 @@ class _ClientFormModalState extends ConsumerState<ClientFormModal> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text("ANNULER", style: TextStyle(color: AppTheme.primary.withOpacity(0.6))),
+                      child: Text("ANNULER", style: TextStyle(color: AppTheme.primary.withValues(alpha: 0.6))),
                     ),
                     const SizedBox(width: 16),
                     ElevatedButton(
@@ -183,7 +183,7 @@ class _ClientFormModalState extends ConsumerState<ClientFormModal> {
       child: Text(
         label,
         style: TextStyle(
-          color: AppTheme.primary.withOpacity(0.7),
+          color: AppTheme.primary.withValues(alpha: 0.7),
           fontWeight: FontWeight.w600,
           fontSize: 13,
         ),

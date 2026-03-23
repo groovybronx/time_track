@@ -21,9 +21,15 @@ class Clients extends Table {
 
 class TimeEntries extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get clientId => integer().nullable().references(Clients, #id, onDelete: KeyAction.cascade)();
+  IntColumn get clientId => integer().nullable().references(
+    Clients,
+    #id,
+    onDelete: KeyAction.cascade,
+  )();
   TextColumn get taskName => text().withLength(min: 1, max: 200)();
-  TextColumn get clientName => text().nullable().withDefault(const Constant('—'))();  DateTimeColumn get startAt => dateTime()();
+  TextColumn get clientName =>
+      text().nullable().withDefault(const Constant('—'))();
+  DateTimeColumn get startAt => dateTime()();
   DateTimeColumn get endAt => dateTime().nullable()();
 
   BoolColumn get autoStart => boolean().withDefault(const Constant(false))();
@@ -58,23 +64,41 @@ class AppDatabase extends _$AppDatabase {
   // --- MÉTHODES POUR LE TRACKER (Dashboard) ---
 
   Stream<TimeEntry?> watchActiveEntry() {
-    return (select(timeEntries)..where((t) => t.endAt.isNull())).watchSingleOrNull();
+    return (select(
+      timeEntries,
+    )..where((t) => t.endAt.isNull())).watchSingleOrNull();
   }
 
   Stream<List<TimeEntry>> watchRecentEntries({int limit = 10}) {
     return (select(timeEntries)
-          ..orderBy([(t) => OrderingTerm(expression: t.startAt, mode: OrderingMode.desc)])
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.startAt, mode: OrderingMode.desc),
+          ])
           ..limit(limit))
         .watch();
   }
 
-  Future<int> startEntry({required String taskName, required String clientName, int? clientId}) {
-    return into(timeEntries).insert(TimeEntriesCompanion.insert(
-      taskName: taskName,
-      clientName: Value(clientName),
-      clientId: Value(clientId),
-      startAt: DateTime.now(),
-    ));
+  Future<int> startEntry({
+    required String taskName,
+    required String clientName,
+    int? clientId,
+  }) {
+    return into(timeEntries).insert(
+      TimeEntriesCompanion.insert(
+        taskName: taskName,
+        clientName: Value(clientName),
+        clientId: Value(clientId),
+        startAt: DateTime.now(),
+      ),
+    );
+  }
+
+  Future<bool> updateTimeEntry(TimeEntry entry) {
+    return update(timeEntries).replace(entry);
+  }
+
+  Future<int> deleteTimeEntry(int id) {
+    return (delete(timeEntries)..where((t) => t.id.equals(id))).go();
   }
 
   @override
@@ -96,11 +120,11 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
-    Future<void> stopEntry({required int id}) {
-      return (update(timeEntries)..where((t) => t.id.equals(id))).write(
-        TimeEntriesCompanion(endAt: Value(DateTime.now())),
-      );
-    }
+  Future<void> stopEntry({required int id}) {
+    return (update(timeEntries)..where((t) => t.id.equals(id))).write(
+      TimeEntriesCompanion(endAt: Value(DateTime.now())),
+    );
+  }
 
   // --- MÉTHODES POUR L'AGENDA (Jointure) ---
 
@@ -124,7 +148,8 @@ class AppDatabase extends _$AppDatabase {
   Stream<List<Client>> watchAllClients() => select(clients).watch();
   Future<int> addClient(ClientsCompanion entry) => into(clients).insert(entry);
   Future<bool> updateClient(Client entry) => update(clients).replace(entry);
-  Future<int> deleteClient(int id) => (delete(clients)..where((t) => t.id.equals(id))).go();
+  Future<int> deleteClient(int id) =>
+      (delete(clients)..where((t) => t.id.equals(id))).go();
 }
 
 LazyDatabase _openConnection() {

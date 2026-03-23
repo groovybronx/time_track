@@ -308,7 +308,7 @@ class _KpiCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(label,
-                    style: TextStyle(color: AppTheme.primary.withOpacity(0.7), fontSize: 12),
+                    style: TextStyle(color: AppTheme.primary.withValues(alpha: 0.7), fontSize: 12),
                     overflow: TextOverflow.ellipsis, // Coupe proprement si trop long
                   ),
                   Text(value,

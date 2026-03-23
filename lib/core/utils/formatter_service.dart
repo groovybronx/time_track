@@ -20,7 +20,6 @@ class FormatterService {
       case DateFormatType.ymd:
         return DateFormat('yyyy-MM-dd').format(date);
       case DateFormatType.dmy:
-      default:
         return DateFormat('dd/MM/yyyy').format(date);
     }
   }
