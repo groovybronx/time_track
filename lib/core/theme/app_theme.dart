@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 
 class AppTheme {
   AppTheme._();
@@ -60,17 +61,21 @@ class AppTheme {
     );
   }
 
-// Utilitaire pour appliquer l'effet Glass à n'importe quel Widget
-  static Widget glassCard({required Widget child}) {
+  // Utilitaire pour appliquer l'effet Glass à n'importe quel Widget
+    static Widget glassCard({required Widget child, Color? bgColor}) {
     return Container(
       decoration: BoxDecoration(
-        color: glassBgLight, // Ajuster selon le thème
+        // Utilise bgColor s'il est fourni, sinon utilise la couleur par défaut
+        color: bgColor ?? glassBgLight,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: glassBorder),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
-        child: child,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: glassBlur, sigmaY: glassBlur),
+          child: child,
+        ),
       ),
     );
   }

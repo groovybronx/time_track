@@ -4,6 +4,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/theme/app_theme.dart';
 import 'app_shell.dart';
+import 'data/local/database.dart'; // Ajoute cet import
+
+// Définit le provider globalement pour que toute l'app y ait accès
+final databaseProvider = Provider<AppDatabase>((ref) => AppDatabase());
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

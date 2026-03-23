@@ -1,7 +1,6 @@
 name: time_track
 description: "Application de suivi du temps multi-plateforme."
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
@@ -26,6 +25,8 @@ dependencies:
   drift: ^2.23.1
   drift_flutter: ^0.2.4
   path_provider: ^2.1.5
+  path: ^1.9.0               # <--- AJOUTÉ : Pour p.join dans database.dart
+  sqlite3_flutter_libs: ^0.5.25 # <--- AJOUTÉ : Indispensable pour macOS/iOS/Android
 
 dev_dependencies:
   flutter_test:
@@ -36,13 +37,15 @@ dev_dependencies:
   drift_dev: ^2.23.1
   build_runner: ^2.4.13
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
 flutter:
   uses-material-design: true
-  generate: true
+  generate: true # Nécessaire pour l'internationalisation (.arb)
+
+  # Assure-toi que ces dossiers existent !
+  assets:
+    - assets/fonts/
+    # - assets/images/ # Si tu as des logos ou icônes
+
   fonts:
     - family: Inter
       fonts:

@@ -4,7 +4,6 @@ import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
-// Ce fichier sera généré par Drift (flutter pub run build_runner build)
 part 'database.g.dart';
 
 // --- TABLES ---
@@ -20,75 +19,114 @@ class Clients extends Table {
   TextColumn get colorToken => text().withDefault(const Constant('blue-500'))();
 }
 
-class Prestations extends Table {
+class TimeEntries extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get clientId => integer().references(Clients, #id, onDelete: KeyAction.cascade)();
-  TextColumn get nomTache => text().withLength(min: 1, max: 200)();
-  DateTimeColumn get dateDebut => dateTime()();
-  DateTimeColumn get dateFin => dateTime()();
+  IntColumn get clientId => integer().nullable().references(Clients, #id, onDelete: KeyAction.cascade)();
+  TextColumn get taskName => text().withLength(min: 1, max: 200)();
+  TextColumn get clientName => text().nullable().withDefault(const Constant('—'))();  DateTimeColumn get startAt => dateTime()();
+  DateTimeColumn get endAt => dateTime().nullable()();
 
-  // Flags d'automatisation
   BoolColumn get autoStart => boolean().withDefault(const Constant(false))();
   BoolColumn get autoStop => boolean().withDefault(const Constant(false))();
   IntColumn get alerteMinutes => integer().withDefault(const Constant(0))();
 }
 
-class Settings extends Table {
-  TextColumn get key => text()();
-  TextColumn get value => text()();
-  @override
-  Set<Column> get primaryKey => {key};
+// Classe de jointure pour l'Agenda (Prestation + Client)
+class TimeEntryWithClient {
+  final TimeEntry entry;
+  final Client? client;
+  TimeEntryWithClient(this.entry, this.client);
 }
 
 // --- BASE DE DONNÉES ---
 
-
-
-@DriftDatabase(tables: [Clients, Prestations, Settings])
+@DriftDatabase(tables: [Clients, TimeEntries])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
+  // --- AJOUT DU SINGLETON ---
+  static final AppDatabase _instance = AppDatabase._internal();
+
+  factory AppDatabase() {
+    return _instance;
+  }
+
+  AppDatabase._internal() : super(_openConnection());
+  // --------------------------
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2; // On monte la version car on a ajouté clientName
 
-  // --- REQUÊTES RÉACTIVES (STREAMS) ---
+  // --- MÉTHODES POUR LE TRACKER (Dashboard) ---
 
-  // 1. Récupérer tous les clients
-  Stream<List<Client>> watchAllClients() => select(clients).watch();
+  Stream<TimeEntry?> watchActiveEntry() {
+    return (select(timeEntries)..where((t) => t.endAt.isNull())).watchSingleOrNull();
+  }
 
-  // 2. Récupérer les prestations pour l'agenda (avec les infos clients)
-  Stream<List<PrestationWithClient>> watchPrestations() {
-    final query = select(prestations).join([
-      innerJoin(clients, clients.id.equalsExp(prestations.clientId)),
+  Stream<List<TimeEntry>> watchRecentEntries({int limit = 10}) {
+    return (select(timeEntries)
+          ..orderBy([(t) => OrderingTerm(expression: t.startAt, mode: OrderingMode.desc)])
+          ..limit(limit))
+        .watch();
+  }
+
+  Future<int> startEntry({required String taskName, required String clientName, int? clientId}) {
+    return into(timeEntries).insert(TimeEntriesCompanion.insert(
+      taskName: taskName,
+      clientName: Value(clientName),
+      clientId: Value(clientId),
+      startAt: DateTime.now(),
+    ));
+  }
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onCreate: (m) async {
+        await m.createAll();
+      },
+      onUpgrade: (m, from, to) async {
+        if (from < 2) {
+          // Logique pour passer de la V1 à la V2 : on ajoute la colonne manquante
+          await m.addColumn(timeEntries, timeEntries.clientName);
+        }
+      },
+      beforeOpen: (details) async {
+        // Optionnel : Active les clés étrangères pour SQLite
+        await customStatement('PRAGMA foreign_keys = ON');
+      },
+    );
+  }
+
+    Future<void> stopEntry({required int id}) {
+      return (update(timeEntries)..where((t) => t.id.equals(id))).write(
+        TimeEntriesCompanion(endAt: Value(DateTime.now())),
+      );
+    }
+
+  // --- MÉTHODES POUR L'AGENDA (Jointure) ---
+
+  Stream<List<TimeEntryWithClient>> watchPrestationsWithClient() {
+    final query = select(timeEntries).join([
+      leftOuterJoin(clients, clients.id.equalsExp(timeEntries.clientId)),
     ]);
 
     return query.watch().map((rows) {
       return rows.map((row) {
-        return PrestationWithClient(
-          row.readTable(prestations),
-          row.readTable(clients),
+        return TimeEntryWithClient(
+          row.readTable(timeEntries),
+          row.readTableOrNull(clients),
         );
       }).toList();
     });
   }
 
-  // --- ACTIONS CRUD ---
+  // --- MÉTHODES CLIENTS (CRUD) ---
 
+  Stream<List<Client>> watchAllClients() => select(clients).watch();
   Future<int> addClient(ClientsCompanion entry) => into(clients).insert(entry);
-  Future updateClient(Client entry) => update(clients).replace(entry);
-  Future deleteClient(int id) => (delete(clients)..where((t) => t.id.equals(id))).go();
-
-  Future<int> addPrestation(PrestationsCompanion entry) => into(prestations).insert(entry);
+  Future<bool> updateClient(Client entry) => update(clients).replace(entry);
+  Future<int> deleteClient(int id) => (delete(clients)..where((t) => t.id.equals(id))).go();
 }
 
-// Classe de transfert pour l'agenda (Jointure)
-class PrestationWithClient {
-  final Prestation prestation;
-  final Client client;
-  PrestationWithClient(this.prestation, this.client);
-}
-
-// Configuration de la connexion (Mobile & Desktop)
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();

@@ -4,9 +4,8 @@ import 'core/theme/app_theme.dart';
 import 'features/tracker/presentation/dashboard_screen.dart';
 import 'features/agenda/presentation/agenda_screen.dart';
 import 'features/clients/presentation/clients_screen.dart';
-import 'features/stats/presentation/stats_screen.dart';
 import 'features/settings/presentation/settings_screen.dart';
-
+import 'features/stats/presentation/stats_screen.dart';
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
 

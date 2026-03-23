@@ -140,7 +140,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                 final controller = ref.read(
                                   trackerControllerProvider,
                                 );
-                                await controller.toggleTracking(activeEntry);
+                                await controller.toggleTracking(activeEntry: activeEntry);
                               },
                         icon: Icon(
                           isTracking
@@ -297,38 +297,26 @@ class _KpiCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppTheme.glassCard(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Row(
+        padding: const EdgeInsets.all(16.0),
+        child: Row( // C'est cette ligne qui déborde
           children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
+            Icon(icon, color: color, size: 32),
+            const SizedBox(width: 12),
+            Expanded( // AJOUTE CECI : Force le texte à rester dans les limites
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(label,
+                    style: TextStyle(color: AppTheme.primary.withOpacity(0.7), fontSize: 12),
+                    overflow: TextOverflow.ellipsis, // Coupe proprement si trop long
+                  ),
+                  Text(value,
+                    style: const TextStyle(color: AppTheme.primary, fontWeight: FontWeight.bold, fontSize: 16),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
-              child: Icon(icon, color: color, size: 22),
-            ),
-            const SizedBox(width: 14),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: AppTheme.primary,
-                  ),
-                ),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppTheme.primary.withValues(alpha: 0.55),
-                  ),
-                ),
-              ],
             ),
           ],
         ),
@@ -336,7 +324,6 @@ class _KpiCard extends StatelessWidget {
     );
   }
 }
-
 class _PrestationListTile extends StatelessWidget {
   const _PrestationListTile({required this.entry});
 
@@ -370,7 +357,7 @@ class _PrestationListTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  entry.clientName,
+                  entry.clientName ?? '—',
                   style: TextStyle(
                     color: AppTheme.primary.withValues(alpha: 0.6),
                     fontSize: 13,
